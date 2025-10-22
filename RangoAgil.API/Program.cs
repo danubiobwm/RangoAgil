@@ -10,6 +10,15 @@ builder.Services.AddDbContext<RangoDbContext>(
 
 var app = builder.Build();
 
-app.MapGet("/", () => "Hello World!");
+app.MapGet("/rango/{id}", (RangoDbContext rangoDbContext, int id) =>
+{
+    return rangoDbContext.Rangos.FirstOrDefault(rango => rango.Id == id);
+});
+
+app.MapGet("/rangos", (RangoDbContext rangoDbContext) =>
+{
+    return rangoDbContext.Rangos;
+});
 
 app.Run();
+ 
