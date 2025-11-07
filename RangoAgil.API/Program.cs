@@ -10,14 +10,14 @@ builder.Services.AddDbContext<RangoDbContext>(
 
 var app = builder.Build();
 
-app.MapGet("/rango/{id}", (RangoDbContext rangoDbContext, int id) =>
+app.MapGet("/rango/{id}", async(RangoDbContext rangoDbContext, int id) =>
 {
-    return rangoDbContext.Rangos.FirstOrDefault(rango => rango.Id == id);
+    return await rangoDbContext.Rangos.FirstOrDefaultAsync(rango => rango.Id == id);
 });
 
-app.MapGet("/rangos", (RangoDbContext rangoDbContext) =>
+app.MapGet("/rangos", async (RangoDbContext rangoDbContext) =>
 {
-    return rangoDbContext.Rangos;
+    return await rangoDbContext.Rangos.ToListAsync();
 });
 
 app.Run();
