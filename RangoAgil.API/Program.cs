@@ -1,7 +1,9 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RangoAgil.API.DbContexts;
+using RangoAgil.API.Models;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -30,14 +32,25 @@ app.MapGet("/rangos", async Task<IResult> (RangoDbContext rangoDbContext, [FromQ
     }
 });
 
-app.MapGet("/rango/{id}", async (RangoDbContext rangoDbContext, int id) =>
+app.MapGet("/rango/{rangoId:int}/ingredientes", async (
+    RangoDbContext rangoDbContext,
+    IMapper mapper, 
+    int rangoId) =>
 {
-    return await rangoDbContext.Rangos.FirstOrDefaultAsync(rango => rango.Id == id);
+     return mapper.Map<IEnumerable<IngredienteDTO>> ((await rangoDbContext.Rangos
+        .Include(rango => rango.Ingredientes)
+        .FirstOrDefaultAsync(rango => rango.Id == rangoId))?.Ingredientes);
 });
 
-app.MapGet("/rangos", async (RangoDbContext rangoDbContext) =>
+app.MapGet("/rango/{id:int}", async (
+    RangoDbContext rangoDbContext, 
+    IMapper mapper ,
+    int id) =>
 {
-    return await rangoDbContext.Rangos.ToListAsync();
+    return mapper.Map<RangoDTO>(await rangoDbContext.Rangos
+        .Include(rango => rango.Ingredientes)
+        .FirstOrDefaultAsync(rango => rango.Id == id));
 });
+
 
 app.Run();
