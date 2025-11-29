@@ -8,10 +8,13 @@ namespace RangoAgil.API.Profiles;
         public RangoAgilProfile()
         {
             CreateMap<Rango, RangoDTO>().ReverseMap();
+            CreateMap<RangoForCreateDTO, Rango>().ReverseMap();
         CreateMap<Ingrediente, IngredienteDTO>()
         .ForMember(d => d.RangoID, o => o.MapFrom(s => s.Rangos.First().Id));
 
-    
+        CreateMap<Rango, RangoForUpdateDTO>().ReverseMap();
+
+
     }
     }
  
