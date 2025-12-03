@@ -33,7 +33,7 @@ app.MapGet("/rangos", async Task<IResult> (RangoDbContext rangoDbContext, [FromQ
     }
 });
 
-app.MapGet("/rango/{rangoId:int}/ingredientes", async (
+app.MapGet("/rangos/{rangoId:int}/ingredientes", async (
     RangoDbContext rangoDbContext,
     IMapper mapper, 
     int rangoId) =>
@@ -43,17 +43,17 @@ app.MapGet("/rango/{rangoId:int}/ingredientes", async (
         .FirstOrDefaultAsync(rango => rango.Id == rangoId))?.Ingredientes);
 });
 
-app.MapGet("/rango/{id:int}", async (
+app.MapGet("/rangos/{rangoId:int}", async (
     RangoDbContext rangoDbContext, 
     IMapper mapper ,
-    int id) =>
+    int rangoId) =>
 {
     return mapper.Map<RangoDTO>(await rangoDbContext.Rangos
         .Include(rango => rango.Ingredientes)
-        .FirstOrDefaultAsync(rango => rango.Id == id));
+        .FirstOrDefaultAsync(rango => rango.Id == rangoId));
 });
 
-app.MapPost("/rango", async (
+app.MapPost("/rangos", async (
     RangoDbContext rangoDbContext, 
     IMapper mapper, [FromBody] RangoForCreateDTO rangoForCreateDTO) => { 
   
@@ -65,13 +65,13 @@ app.MapPost("/rango", async (
         return TypedResults.Created($"/rango/{rangoToReturn.Id}", rangoToReturn);
     });
 
-app.MapPut("/rango/{id:int}", async Task<Results<NotFound, Ok>>(
+app.MapPut("/rangos/{rangoId:int}", async Task<Results<NotFound, Ok>>(
     RangoDbContext rangoDbContext,
     IMapper mapper,
-    int id,
+    int rangoId,
     [FromBody] RangoForUpdateDTO rangoForUpdateDTO) =>
 {
-    var rangosEntity = await rangoDbContext.Rangos.FirstOrDefaultAsync(x=>x.Id==id);
+    var rangosEntity = await rangoDbContext.Rangos.FirstOrDefaultAsync(x=>x.Id==rangoId);
        
 
     if (rangosEntity == null)
@@ -85,11 +85,11 @@ app.MapPut("/rango/{id:int}", async Task<Results<NotFound, Ok>>(
     return TypedResults.Ok();
 });
 
-app.MapDelete("/rango/{id:int}", async Task<Results<NotFound, NoContent>> (
+app.MapDelete("/rangos/{rangoId:int}", async Task<Results<NotFound, NoContent>> (
     RangoDbContext rangoDbContext,
-    int id) =>
+    int rangoId) =>
 {
-    var rangosEntity = await rangoDbContext.Rangos.FirstOrDefaultAsync(x => x.Id == id);
+    var rangosEntity = await rangoDbContext.Rangos.FirstOrDefaultAsync(x => x.Id == rangoId);
 
 
     if (rangosEntity == null)
