@@ -17,7 +17,9 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 var app = builder.Build();
 
-app.MapGet("/rangos", async Task<IResult> (RangoDbContext rangoDbContext, [FromQuery(Name = "name")] string? rangoNome) =>
+var rangosEndponts = app.MapGroup("/api/v1");
+
+rangosEndponts.MapGet("/rangos", async Task<IResult> (RangoDbContext rangoDbContext, [FromQuery(Name = "name")] string? rangoNome) =>
 {
     var rangosEntity = await rangoDbContext.Rangos
         .Where(x => rangoNome == null || x.Nome.ToLower().Contains(rangoNome.ToLower()))
@@ -33,7 +35,7 @@ app.MapGet("/rangos", async Task<IResult> (RangoDbContext rangoDbContext, [FromQ
     }
 });
 
-app.MapGet("/rangos/{rangoId:int}/ingredientes", async (
+rangosEndponts.MapGet("/rangos/{rangoId:int}/ingredientes", async (
     RangoDbContext rangoDbContext,
     IMapper mapper, 
     int rangoId) =>
@@ -43,7 +45,7 @@ app.MapGet("/rangos/{rangoId:int}/ingredientes", async (
         .FirstOrDefaultAsync(rango => rango.Id == rangoId))?.Ingredientes);
 });
 
-app.MapGet("/rangos/{rangoId:int}", async (
+rangosEndponts.MapGet("/rangos/{rangoId:int}", async (
     RangoDbContext rangoDbContext, 
     IMapper mapper ,
     int rangoId) =>
@@ -53,7 +55,7 @@ app.MapGet("/rangos/{rangoId:int}", async (
         .FirstOrDefaultAsync(rango => rango.Id == rangoId));
 });
 
-app.MapPost("/rangos", async (
+rangosEndponts.MapPost("/rangos", async (
     RangoDbContext rangoDbContext, 
     IMapper mapper, [FromBody] RangoForCreateDTO rangoForCreateDTO) => { 
   
@@ -65,7 +67,7 @@ app.MapPost("/rangos", async (
         return TypedResults.Created($"/rango/{rangoToReturn.Id}", rangoToReturn);
     });
 
-app.MapPut("/rangos/{rangoId:int}", async Task<Results<NotFound, Ok>>(
+rangosEndponts.MapPut("/rangos/{rangoId:int}", async Task<Results<NotFound, Ok>>(
     RangoDbContext rangoDbContext,
     IMapper mapper,
     int rangoId,
@@ -85,7 +87,7 @@ app.MapPut("/rangos/{rangoId:int}", async Task<Results<NotFound, Ok>>(
     return TypedResults.Ok();
 });
 
-app.MapDelete("/rangos/{rangoId:int}", async Task<Results<NotFound, NoContent>> (
+rangosEndponts.MapDelete("/rangos/{rangoId:int}", async Task<Results<NotFound, NoContent>> (
     RangoDbContext rangoDbContext,
     int rangoId) =>
 {
