@@ -1,7 +1,7 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using RangoAgil.API.DbContexts;
-using RangoAgil.API.EndpointHandlers; // Adiciona o namespace do handler
+using RangoAgil.API.EndpointHandlers; 
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,5 +15,6 @@ var app = builder.Build();
 
 
 app.MapRangosEndpoints();
+app.MapIngredientesEndpoints();
 
 app.Run();

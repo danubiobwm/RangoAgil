@@ -12,11 +12,10 @@ namespace RangoAgil.API.EndpointHandlers
     {
         public static void MapRangosEndpoints(this IEndpointRouteBuilder app)
         {
-          
-            var rangosEndponts = app.MapGroup("/api/v1");
+            var rangosEndponts = app.MapGroup("/api/v1/rangos");
 
             // GET /api/v1/rangos
-            rangosEndponts.MapGet("/rangos", async Task<IResult> (RangoDbContext rangoDbContext, [FromQuery(Name = "name")] string? rangoNome) =>
+            rangosEndponts.MapGet("/", async Task<IResult> (RangoDbContext rangoDbContext, [FromQuery(Name = "name")] string? rangoNome) =>
             {
                 var rangosEntity = await rangoDbContext.Rangos
                     .Where(x => rangoNome == null || x.Nome.ToLower().Contains(rangoNome.ToLower()))
@@ -32,19 +31,8 @@ namespace RangoAgil.API.EndpointHandlers
                 }
             });
 
-            // GET /api/v1/rangos/{rangoId}/ingredientes
-            rangosEndponts.MapGet("/rangos/{rangoId:int}/ingredientes", async (
-                RangoDbContext rangoDbContext,
-                IMapper mapper,
-                int rangoId) =>
-            {
-                return mapper.Map<IEnumerable<IngredienteDTO>>((await rangoDbContext.Rangos
-                    .Include(rango => rango.Ingredientes)
-                    .FirstOrDefaultAsync(rango => rango.Id == rangoId))?.Ingredientes);
-            });
-
             // GET /api/v1/rangos/{rangoId}
-            rangosEndponts.MapGet("/rangos/{rangoId:int}", async (
+            rangosEndponts.MapGet("/{rangoId:int}", async (
                 RangoDbContext rangoDbContext,
                 IMapper mapper,
                 int rangoId) =>
@@ -55,7 +43,7 @@ namespace RangoAgil.API.EndpointHandlers
             });
 
             // POST /api/v1/rangos
-            rangosEndponts.MapPost("/rangos", async (
+            rangosEndponts.MapPost("/", async (
                 RangoDbContext rangoDbContext,
                 IMapper mapper, [FromBody] RangoForCreateDTO rangoForCreateDTO) => {
 
@@ -68,7 +56,7 @@ namespace RangoAgil.API.EndpointHandlers
                 });
 
             // PUT /api/v1/rangos/{rangoId}
-            rangosEndponts.MapPut("/rangos/{rangoId:int}", async Task<Results<NotFound, Ok>> (
+            rangosEndponts.MapPut("/{rangoId:int}", async Task<Results<NotFound, Ok>> (
                 RangoDbContext rangoDbContext,
                 IMapper mapper,
                 int rangoId,
@@ -88,7 +76,7 @@ namespace RangoAgil.API.EndpointHandlers
             });
 
             // DELETE /api/v1/rangos/{rangoId}
-            rangosEndponts.MapDelete("/rangos/{rangoId:int}", async Task<Results<NotFound, NoContent>> (
+            rangosEndponts.MapDelete("/{rangoId:int}", async Task<Results<NotFound, NoContent>> (
                 RangoDbContext rangoDbContext,
                 int rangoId) =>
             {
